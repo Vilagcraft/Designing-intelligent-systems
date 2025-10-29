@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализатор тональности отзывов онлайн магазинов - Архитектура интеллектуальной системы</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 30px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+
+        h3 {
+            color: var(--dark-color);
+            margin-top: 25px;
+        }
+
+        h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .diagram {
+            text-align: center;
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #f0f5ff;
+            border-radius: 8px;
+            border: 1px solid #d0d9ff;
+        }
+
+        .diagram-placeholder {
+            background-color: #e0e0e0;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .caption {
+            font-style: italic;
+            margin-top: 10px;
+            color: #666;
+            text-align: center;
+        }
+
+        .component {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .highlight {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .argument {
+            background-color: #e8f4f8;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .conclusion {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #4caf50;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .tech-table th,
+        .tech-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .tech-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tech-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+        }
+
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 20px 0;
+            line-height: 1.5;
+            border-left: 4px solid #3498db;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block code {
+            display: block;
+            font-size: 14px;
+        }
+
+        /* Подсветка синтаксиса для Python */
+        .code-block .keyword {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        .code-block .function {
+            color: #50fa7b;
+        }
+
+        .code-block .string {
+            color: #f1fa8c;
+        }
+
+        .code-block .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .code-block .number {
+            color: #bd93f9;
+        }
+
+        .code-block .operator {
+            color: #ff79c6;
+        }
+
+        .code-section {
+            margin: 30px 0;
+        }
+
+        .code-step {
+            margin-bottom: 25px;
+            border-left: 3px solid #3498db;
+            padding-left: 15px;
+        }
+
+        .code-step h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+            line-height: 1.4;
+            border: 1px solid #444;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block code {
+            display: block;
+            font-size: 13px;
+        }
+
+        /* Подсветка синтаксиса для Python */
+        .code-block .keyword {
+            color: #ff79c6;
+        }
+
+        .code-block .function {
+            color: #50fa7b;
+        }
+
+        .code-block .string {
+            color: #f1fa8c;
+        }
+
+        .code-block .comment {
+            color: #6272a4;
+            font-style: italic;
+        }
+
+        .code-block .number {
+            color: #bd93f9;
+        }
+
+        .code-block .operator {
+            color: #ff79c6;
+        }
+
+        .diagram {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Анализатор тональности отзывов онлайн магазинов</h1>
+        <div class="subtitle">Архитектура интеллектуальной системы</div>
+    </header>
+
+    <div class="content">
+        <h2>Введение</h2>
+        <p>С развитием электронной коммерции и увеличением количества онлайн-покупок, отзывы клиентов стали важным
+            источником информации как для покупателей, так и для продавцов. Анализ этих отзывов вручную становится все
+            более сложной задачей из-за их большого объема. Интеллектуальная система анализа отзывов позволяет
+            автоматизировать процесс извлечения полезной информации из текстовых отзывов, классифицировать их по
+            тональности, выделять ключевые темы и проблемы.</p>
+
+        <p>Данный реферат описывает архитектуру интеллектуальной системы для анализа отзывов онлайн магазинов, которая
+            использует методы обработки естественного языка (NLP) и машинного обучения для автоматического анализа
+            текстовых отзывов. В рамках научного проекта система будет работать с готовыми датасетами отзывов,
+            доступными в открытых источниках.</p>
+
+        <h2>Общая архитектура системы</h2>
+        <p>Архитектура системы анализа отзывов состоит из нескольких взаимосвязанных модулей, которые работают вместе
+            для обработки входных данных и генерации аналитических отчетов. Основные компоненты системы включают:</p>
+
+        <div class="diagram">
+            <svg width="100%" height="320" viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#2c3e50" />
+                    </marker>
+                    <linearGradient id="moduleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#3498db" />
+                        <stop offset="100%" stop-color="#2980b9" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Основной поток данных -->
+                <!-- Датасеты отзывов -->
+                <rect x="20" y="60" width="140" height="60" rx="8" fill="#95a5a6" stroke="#2c3e50" stroke-width="1.5" />
+                <text x="90" y="85" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Датасеты</text>
+                <text x="90" y="100" text-anchor="middle" fill="white" font-size="12">отзывов</text>
+
+                <!-- Модуль загрузки данных -->
+                <rect x="180" y="60" width="140" height="60" rx="8" fill="url(#moduleGradient)" stroke="#2c3e50"
+                    stroke-width="1.5" />
+                <text x="250" y="80" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Модуль
+                    загрузки</text>
+                <text x="250" y="95" text-anchor="middle" fill="white" font-size="11">и подготовки данных</text>
+                <text x="250" y="110" text-anchor="middle" fill="white" font-size="10">(Pandas, NumPy)</text>
+
+                <!-- Модуль предобработки текста -->
+                <rect x="340" y="60" width="140" height="60" rx="8" fill="url(#moduleGradient)" stroke="#2c3e50"
+                    stroke-width="1.5" />
+                <text x="410" y="80" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Модуль</text>
+                <text x="410" y="95" text-anchor="middle" fill="white" font-size="11">предобработки текста</text>
+                <text x="410" y="110" text-anchor="middle" fill="white" font-size="10">(NLTK, SpaCy)</text>
+
+                <!-- Модуль анализа тональности -->
+                <rect x="180" y="170" width="140" height="60" rx="8" fill="url(#moduleGradient)" stroke="#2c3e50"
+                    stroke-width="1.5" />
+                <text x="250" y="190" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Модуль
+                    анализа</text>
+                <text x="250" y="205" text-anchor="middle" fill="white" font-size="11">тональности</text>
+                <text x="250" y="220" text-anchor="middle" fill="white" font-size="10">(Scikit-learn, BERT)</text>
+
+                <!-- Модуль извлечения сущностей -->
+                <rect x="340" y="170" width="140" height="60" rx="8" fill="url(#moduleGradient)" stroke="#2c3e50"
+                    stroke-width="1.5" />
+                <text x="410" y="190" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Модуль
+                    извлечения</text>
+                <text x="410" y="205" text-anchor="middle" fill="white" font-size="11">сущностей и тем</text>
+                <text x="410" y="220" text-anchor="middle" fill="white" font-size="10">(NER, LDA)</text>
+
+                <!-- Модуль визуализации -->
+                <rect x="500" y="115" width="140" height="60" rx="8" fill="url(#moduleGradient)" stroke="#2c3e50"
+                    stroke-width="1.5" />
+                <text x="570" y="130" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Модуль</text>
+                <text x="570" y="145" text-anchor="middle" fill="white" font-size="11">визуализации</text>
+                <text x="570" y="160" text-anchor="middle" fill="white" font-size="10">(Matplotlib, Seaborn)</text>
+
+                <!-- Аналитические отчеты -->
+                <rect x="660" y="115" width="120" height="60" rx="8" fill="#34495e" stroke="#2c3e50"
+                    stroke-width="1.5" />
+                <text x="720" y="130" text-anchor="middle" fill="white" font-weight="bold"
+                    font-size="13">Аналитические</text>
+                <text x="720" y="145" text-anchor="middle" fill="white" font-size="11">отчеты</text>
+                <text x="720" y="160" text-anchor="middle" fill="white" font-size="10">и дашборды</text>
+
+                <!-- Стрелки соединений -->
+                <!-- От датасетов к модулю загрузки -->
+                <path d="M160,90 L180,90" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowhead)"
+                    fill="none" />
+
+                <!-- От модуля загрузки к предобработке -->
+                <path d="M320,90 L340,90" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowhead)"
+                    fill="none" />
+
+                <!-- От предобработки к анализу тональности -->
+                <path d="M410,120 L410,170" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowhead)"
+                    fill="none" />
+
+                <!-- От предобработки к извлечению сущностей -->
+                <path d="M480,90 L570,90 L570,115" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowhead)"
+                    fill="none" />
+
+                <!-- От анализа тональности к визуализации (обходная стрелка) -->
+                <path d="M250,230 L250,250 L570,250 L570,175" stroke="#2c3e50" stroke-width="1.5"
+                    marker-end="url(#arrowhead)" fill="none" />
+
+                <!-- От извлечения сущностей к визуализации -->
+                <path d="M480,200 L570,200 L570,175" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowhead)"
+                    fill="none" />
+
+                <!-- От визуализации к отчетам -->
+                <path d="M640,145 L660,145" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowhead)"
+                    fill="none" />
+
+                <!-- Подписи потоков данных -->
+                <text x="90" y="50" text-anchor="middle" fill="#2c3e50" font-size="16">Входные данные</text>
+                <text x="720" y="100" text-anchor="middle" fill="#2c3e50" font-size="16">Результаты анализа</text>
+            </svg>
+            <div class="caption">Рис. 1 - Общая архитектура системы анализа отзывов</div>
+        </div>
+
+        <h3>Основные модули системы</h3>
+
+        <div class="component">
+            <h4>1. Модуль загрузки и подготовки данных</h4>
+            <p>Этот модуль отвечает за загрузку готовых датасетов отзывов из открытых источников. Он выполняет первичную
+                обработку данных: проверку целостности, удаление дубликатов, обработку пропущенных значений.</p>
+
+            <div class="argument">
+                <strong>Аргументация выбора:</strong> Для научного проекта использование готовых датасетов
+                предпочтительнее, так как они уже размечены и проверены, что позволяет сосредоточиться на разработке и
+                тестировании алгоритмов анализа.
+            </div>
+        </div>
+
+        <div class="component">
+            <h4>2. Модуль предварительной обработки текста</h4>
+            <p>Выполняет очистку и нормализацию текста отзывов: токенизация, удаление стоп-слов, лемматизация,
+                исправление опечаток, обработка эмотиконов и сленга. Этот этап критически важен для повышения качества
+                последующего анализа.</p>
+
+            <div class="argument">
+                <strong>Аргументация выбора:</strong> Качественная предобработка текста значительно улучшает результаты
+                моделей машинного обучения, уменьшая размерность признакового пространства и удаляя шумовые данные.
+            </div>
+        </div>
+
+        <div class="component">
+            <h4>3. Модуль анализа тональности</h4>
+            <p>Определяет эмоциональную окраску отзыва (позитивный, негативный, нейтральный). Использует алгоритмы
+                машинного обучения, такие как SVM, Random Forest или нейронные сети, обученные на размеченных данных.
+            </p>
+
+            <div class="argument">
+                <strong>Аргументация выбора:</strong> Анализ тональности является основным компонентом системы, так как
+                позволяет автоматически категоризировать отзывы по эмоциональной окраске, что важно для выявления
+                проблемных областей.
+            </div>
+        </div>
+
+        <div class="component">
+            <h4>4. Модуль извлечения сущностей и тем</h4>
+            <p>Выявляет ключевые аспекты, упомянутые в отзывах: продукты, характеристики, службы доставки, поддержку
+                клиентов. Использует методы NER (Named Entity Recognition) и тематического моделирования.</p>
+
+            <div class="argument">
+                <strong>Аргументация выбора:</strong> Извлечение сущностей и тем позволяет структурировать информацию из
+                неструктурированных текстовых данных, что облегчает последующий анализ и визуализацию.
+            </div>
+        </div>
+
+        <div class="component">
+            <h4>5. Модуль визуализации и отчетности</h4>
+            <p>Агрегирует результаты анализа и представляет их в удобной для восприятия форме: дашборды, графики,
+                сводные таблицы. Позволяет выявлять тенденции и проблемные области.</p>
+
+            <div class="argument">
+                <strong>Аргументация выбора:</strong> Эффективная визуализация результатов анализа критически важна для
+                интерпретации данных и принятия решений на основе полученных инсайтов.
+            </div>
+        </div>
+
+        <h2>Техническая реализация</h2>
+
+        <h3>Выбор языка программирования и технологий</h3>
+        <p>Для реализации системы анализа отзывов выбран язык Python и следующие технологии:</p>
+
+        <table class="tech-table">
+            <thead>
+                <tr>
+                    <th>Технология</th>
+                    <th>Назначение</th>
+                    <th>Аргументация выбора</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Python 3.8+</td>
+                    <td>Основной язык разработки</td>
+                    <td>Широкая экосистема библиотек для анализа данных и NLP, простота использования, хорошая
+                        документация</td>
+                </tr>
+                <tr>
+                    <td>Pandas, NumPy</td>
+                    <td>Обработка и манипуляция данными</td>
+                    <td>Эффективная работа с структурированными данными, богатый функционал для обработки табличных
+                        данных</td>
+                </tr>
+                <tr>
+                    <td>NLTK, SpaCy</td>
+                    <td>Предобработка текста и лингвистический анализ</td>
+                    <td>Комплексные инструменты для обработки естественного языка, поддержка русского языка,
+                        предобученные модели</td>
+                </tr>
+                <tr>
+                    <td>Scikit-learn</td>
+                    <td>Классификация тональности и машинное обучение</td>
+                    <td>Широкий выбор алгоритмов ML, простота использования, хорошая документация и сообщество</td>
+                </tr>
+                <tr>
+                    <td>Transformers (Hugging Face)</td>
+                    <td>Продвинутые модели NLP</td>
+                    <td>Доступ к state-of-the-art моделям (BERT, RoBERTa) для более точного анализа тональности и
+                        извлечения сущностей</td>
+                </tr>
+                <tr>
+                    <td>Matplotlib, Seaborn</td>
+                    <td>Визуализация результатов</td>
+                    <td>Гибкость в создании различных типов графиков, интеграция с Pandas</td>
+                </tr>
+                <tr>
+                    <td>Jupyter Notebook</td>
+                    <td>Прототипирование и анализ</td>
+                    <td>Интерактивная среда для исследования данных и быстрого прототипирования алгоритмов</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Архитектура данных и алгоритмы</h3>
+
+        <div class="highlight">
+            <h4>Используемые алгоритмы машинного обучения:</h4>
+            <ul>
+                <li><strong>Для классификации тональности:</strong> Логистическая регрессия, SVM, Random Forest,
+                    Gradient Boosting, нейронные сети (LSTM, BERT)</li>
+                <li><strong>Для тематического моделирования:</strong> LDA (Latent Dirichlet Allocation), NMF
+                    (Non-negative Matrix Factorization)</li>
+                <li><strong>Для извлечения сущностей:</strong> CRF (Conditional Random Fields), предобученные модели
+                    SpaCy, модели на основе BERT</li>
+            </ul>
+        </div>
+
+        <h3>Пример реализации базового анализатора тональности</h3>
+        <p>Ниже представлен код базового анализатора тональности на Python с использованием библиотек Scikit-learn и
+            NLTK:</p>
+
+        <div class="code-section">
+            <h3>Пример реализации базового анализатора тональности</h3>
+            <p>Ниже представлен поэтапный код базового анализатора тональности на Python с использованием библиотек
+                Scikit-learn и NLTK:</p>
+
+            <div class="code-step">
+                <h4>1. Импорт необходимых библиотек</h4>
+                <div class="code-block">
+                    <pre><code>import pandas as pd
+import numpy as np
+import re
+from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, accuracy_score</code></pre>
+                </div>
+            </div>
+
+            <div class="code-step">
+                <h4>2. Загрузка и предварительный просмотр данных</h4>
+                <div class="code-block">
+                    <pre><code># Загрузка датасета с отзывами
+data = pd.read_csv('reviews_dataset.csv')
+
+# Просмотр структуры данных
+print("Размер датасета:", data.shape)
+print("\nПервые 5 записей:")
+print(data.head())
+print("\nРаспределение тональности:")
+print(data['sentiment'].value_counts())</code></pre>
+                </div>
+            </div>
+
+            <div class="code-step">
+                <h4>3. Функция предобработки текста</h4>
+                <div class="code-block">
+                    <pre><code>def preprocess_text(text):
+    # Удаление специальных символов и цифр
+    text = re.sub(r'[^a-zA-Zа-яА-Я\s]', '', text)
+    
+    # Приведение к нижнему регистру
+    text = text.lower()
+    
+    # Токенизация
+    tokens = text.split()
+    
+    # Удаление стоп-слов
+    stop_words = set(stopwords.words('russian'))
+    tokens = [token for token in tokens if token not in stop_words]
+    
+    # Стемминг
+    stemmer = SnowballStemmer('russian')
+    tokens = [stemmer.stem(token) for token in tokens]
+    
+    return ' '.join(tokens)
+
+# Применение предобработки к данным
+print("Выполняется предобработка текста...")
+data['processed_text'] = data['text'].apply(preprocess_text)</code></pre>
+                </div>
+            </div>
+
+            <div class="code-step">
+                <h4>4. Векторизация текста и разделение данных</h4>
+                <div class="code-block">
+                    <pre><code># Векторизация текста с помощью TF-IDF
+vectorizer = TfidfVectorizer(
+    max_features=5000,
+    ngram_range=(1, 2),  # Учитываем униграммы и биграммы
+    min_df=5,            # Игнорируем термины, встречающиеся реже 5 раз
+    max_df=0.7           # Игнорируем термины, встречающиеся в более чем 70% документов
+)
+
+X = vectorizer.fit_transform(data['processed_text'])
+y = data['sentiment']
+
+# Разделение на обучающую и тестовую выборки
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, 
+    test_size=0.2, 
+    random_state=42, 
+    stratify=y  # Сохраняем распределение классов
+)
+
+print(f"Обучающая выборка: {X_train.shape[0]} примеров")
+print(f"Тестовая выборка: {X_test.shape[0]} примеров")</code></pre>
+                </div>
+            </div>
+
+            <div class="code-step">
+                <h4>5. Обучение модели и оценка качества</h4>
+                <div class="code-block">
+                    <pre><code># Создание и обучение модели логистической регрессии
+model = LogisticRegression(
+    C=1.0,           # Параметр регуляризации
+    max_iter=1000,   # Максимальное количество итераций
+    random_state=42  # Для воспроизводимости результатов
+)
+
+print("Обучение модели...")
+model.fit(X_train, y_train)
+
+# Предсказание на тестовой выборке
+y_pred = model.predict(X_test)
+
+# Оценка производительности модели
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Точность модели: {accuracy:.4f}")
+
+print("\nПодробный отчет по классификации:")
+print(classification_report(y_test, y_pred))</code></pre>
+                </div>
+            </div>
+
+            <div class="code-step">
+                <h4>6. Функция для анализа новых отзывов</h4>
+                <div class="code-block">
+                    <pre><code>def analyze_sentiment(text):
+    """
+    Анализирует тональность текста отзыва
+    
+    Args:
+        text (str): Текст отзыва для анализа
+    
+    Returns:
+        tuple: (sentiment, confidence) - тональность и уверенность предсказания
+    """
+    # Предобработка текста
+    processed_text = preprocess_text(text)
+    
+    # Векторизация
+    vectorized_text = vectorizer.transform([processed_text])
+    
+    # Предсказание
+    prediction = model.predict(vectorized_text)[0]
+    probability = model.predict_proba(vectorized_text)[0]
+    
+    # Сопоставление с текстовыми метками
+    sentiment_map = {0: 'Негативный', 1: 'Позитивный', 2: 'Нейтральный'}
+    
+    return sentiment_map[prediction], max(probability)
+
+# Пример использования
+test_reviews = [
+    "Товар отличного качества, быстрая доставка, рекомендую!",
+    "Ужасное качество, не соответствует описанию, деньги на ветер.",
+    "Нормальный товар за свои деньги, доставка вовремя."
+]
+
+print("\nПримеры анализа отзывов:")
+for review in test_reviews:
+    sentiment, confidence = analyze_sentiment(review)
+    print(f"Отзыв: '{review}'")
+    print(f"Результат: {sentiment} (уверенность: {confidence:.2f})\n")</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <h4>Ключевые особенности реализации:</h4>
+            <ul>
+                <li><strong>Комплексная предобработка текста:</strong> Очистка от специальных символов, приведение к
+                    нижнему регистру, удаление стоп-слов и стемминг</li>
+                <li><strong>Оптимизированная векторизация:</strong> Использование TF-IDF с биграммами и фильтрацией
+                    редких/частых терминов</li>
+                <li><strong>Сбалансированное разделение данных:</strong> Стратифицированное разделение для сохранения
+                    распределения классов</li>
+                <li><strong>Интерпретируемая модель:</strong> Логистическая регрессия как эффективный и понятный
+                    алгоритм</li>
+                <li><strong>Комплексная оценка качества:</strong> Метрики accuracy, precision, recall и F1-score</li>
+                <li><strong>Готовый к использованию анализатор:</strong> Функция для анализа новых текстов с возвратом
+                    уверенности предсказания</li>
+            </ul>
+        </div>
+
+        <h2>Преимущества и применение</h2>
+        <p>Интеллектуальная система анализа отзывов предоставляет значительные преимущества для онлайн-бизнеса и
+            исследователей:</p>
+
+        <ol>
+            <li><strong>Автоматизация анализа:</strong> Значительное сокращение времени и ресурсов, затрачиваемых на
+                ручной анализ отзывов.</li>
+            <li><strong>Выявление тенденций:</strong> Возможность отслеживать изменения в восприятии продуктов и услуг с
+                течением времени.</li>
+            <li><strong>Сравнительный анализ:</strong> Возможность сравнивать отзывы о разных продуктах, категориях или
+                магазинах.</li>
+            <li><strong>Научная ценность:</strong> Разработка и тестирование новых алгоритмов анализа текстовых данных.
+            </li>
+        </ol>
+
+        <div class="conclusion">
+            <h2>Заключение</h2>
+            <p>Интеллектуальная система анализа отзывов онлайн магазинов, разрабатываемая в рамках научного проекта на
+                Python, представляет собой эффективный инструмент для автоматического извлечения ценной информации из
+                пользовательских отзывов. Использование готовых датасетов позволяет сосредоточиться на разработке и
+                оптимизации алгоритмов анализа, а не на сборе данных.</p>
+
+            <p>Выбор Python и связанных с ним библиотек для анализа данных и NLP обусловлен их мощностью, гибкостью и
+                широкой поддержкой сообщества. Модульная архитектура системы обеспечивает масштабируемость и возможность
+                улучшения отдельных компонентов без изменения всей системы.</p>
+
+            <p>Разрабатываемая система имеет как практическую ценность для бизнеса, позволяя автоматизировать анализ
+                отзывов и выявлять проблемные области, так и научную ценность, предоставляя платформу для исследования и
+                сравнения различных алгоритмов анализа текстовых данных.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>Реферат по теме "Анализатор отзывов онлайн магазинов - Архитектура интеллектуальной системы"</p>
+        <p>Научный проект | Python | Обработка естественного языка | Машинное обучение</p>
+        <p>&copy; 2025. Все права защищены.</p>
+    </footer>
+</body>
+
+</html>
