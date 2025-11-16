@@ -34,7 +34,7 @@
 - **Документация**: [mdbook](https://vilagcraft.github.io/Designing-intelligent-systems/Theory/1.1%20%D0%BB%D0%B0%D0%B1%D0%B0.html)
 
 ### 📈 2. Сбор данных и статистика  
-- **Датасет**: [dest]()
+- **Датасет**: [dest](https://github.com/sismetanin/rureviews)
 - **Анализ в Colab**: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1FQdu0_4vlVepLHC2gdPgF1VKGakKGNwX?usp=sharing)
 
 ### ⚙️ 3. Разработка системы
