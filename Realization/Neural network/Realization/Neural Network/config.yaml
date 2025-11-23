@@ -1,5 +1,5 @@
 paths:
-  data: "../../lab2/data/processed/reviews_processed.parquet"
+  data: "../../laba2/lab2/data/processed/reviews_processed.parquet"
   model_dir: "models/"
   vocab_path: "models/vocab.json"
 
