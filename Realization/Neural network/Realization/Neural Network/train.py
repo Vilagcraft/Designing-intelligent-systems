@@ -2,25 +2,38 @@ import json
 import torch
 import pandas as pd
 from pathlib import Path
+
 from src.utils import build_vocab, load_config
 from src.dataset import load_dataloaders
 from src.model import BiLSTMAttention
 from src.trainer import train_model
 
 
-if __name__ == "__main__":
-    config = load_config("config.yaml")
+def full_training_pipeline(config_path="config.yaml"):
+    config = load_config(config_path)
 
-    # подготовка словаря
-    df = pd.read_parquet(config["paths"]["data"])
+    data_path = config["paths"]["data"]
+    vocab_path = Path(config["paths"]["vocab_path"])
+    model_dir = Path(config["paths"]["model_dir"])
+
+    model_dir.mkdir(parents=True, exist_ok=True)
+    vocab_path.parent.mkdir(parents=True, exist_ok=True)
+
+    print("Загружаем датасет…")
+    df = pd.read_parquet(data_path)
+
+    print("Строим словарь…")
     vocab = build_vocab(df)
 
-    with open(config["paths"]["vocab_path"], "w") as f:
+    with open(vocab_path, "w", encoding="utf-8") as f:
         json.dump(vocab, f, ensure_ascii=False, indent=2)
 
-    # dataloaders
+    print(f"Словарь сохранён: {vocab_path}")
+
+    print("Загружаем dataloaders…")
     train_loader, valid_loader, _, label2id = load_dataloaders(config)
 
+    print("Инициализируем модель…")
     model = BiLSTMAttention(
         vocab_size=len(vocab),
         embedding_dim=config["model"]["embedding_dim"],
@@ -30,4 +43,11 @@ if __name__ == "__main__":
         num_classes=len(label2id)
     )
 
+    print("Начинаем обучение…")
     train_model(model, train_loader, valid_loader, config, vocab)
+
+    print("Обучение завершено!")
+
+
+if __name__ == "__main__":
+    full_training_pipeline("config.yaml")

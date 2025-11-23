@@ -1,60 +1,85 @@
 import json
-import os
-import torch
+from pathlib import Path
 
 from src.utils import load_config
 from src.dataset import load_dataloaders
-from train import train_model
+from train import full_training_pipeline
 from predict import predict_text
 from evaluate import evaluate_model
 
 
-def auto_run():
-    """
-    Автоматический end-to-end запуск:
-    1. Загрузка конфига
-    2. Загрузка датасета
-    3. Обучение модели
-    4. Предсказание примеров
-    5. Оценка качества модели
-    """
-    print("Запуск полного ML-конвейера (обучение → предсказание → оценка)")
+COUNTER_FILE = Path("models/train_counter.json")
 
-    # 1. Load config
-    print("Загружаем конфигурацию…")
+
+def should_train() -> bool:
+    """
+    Возвращает True, если нужно запустить обучение:
+    - модель ещё не обучалась (counter.json нет)
+    - счётчик запусков кратен 100
+    """
+
+    if not COUNTER_FILE.exists():
+        print("Счётчик запусков отсутствует — создаём новый и запускаем обучение.")
+        return True
+
+    with open(COUNTER_FILE, "r") as f:
+        data = json.load(f)
+
+    runs = data.get("runs", 0)
+
+    # обучать, если запуск № 100, 200, ...
+    return runs % 100 == 0
+
+
+def increment_counter():
+    """Увеличивает счётчик запусков."""
+    if not COUNTER_FILE.exists():
+        data = {"runs": 1}
+    else:
+        data = json.load(open(COUNTER_FILE))
+        data["runs"] += 1
+
+    with open(COUNTER_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+def auto_run():
+    print("Запуск полного ML-конвейера (train → predict → evaluate)\n")
+
     config = load_config("config.yaml")
 
-    # 2. Load data
-    print("Загружаем датасеты…")
-    train_loader, valid_loader, test_loader, label2id = load_dataloaders(config)
+    # 0. Увеличиваем счётчик
+    increment_counter()
 
-    # Load vocabulary
-    print("Загружаем словарь…")
-    vocab_path = config["paths"]["vocab_path"]
+    # 1. Решаем — нужно ли обучать модель
+    if should_train():
+        print("\nУсловие обучения выполнено — запускаем обучение.")
+        full_training_pipeline("config.yaml")
+    else:
+        print("\nОбучение пропущено (до следующего цикла из 100 запусков).")
+
+    # 2. Предсказания
+    print("\nЗагружаем словарь…")
+    vocab_path = Path(config["paths"]["vocab_path"])
     with open(vocab_path, "r", encoding="utf-8") as f:
         vocab = json.load(f)
 
-    # 3. Train the model
-    print("Начинаем обучение модели…")
-    train_model(train_loader, valid_loader, config, vocab)
-
-    # 4. Run predictions
-    print("\nТестовое предсказание:")
-    test_examples = [
+    print("\nТестовые предсказания:")
+    examples = [
         "Отличный товар, рекомендую!",
         "Ужасное качество, больше не куплю.",
         "Обычный товар, ничего особенного."
     ]
 
-    for text in test_examples:
-        pred = predict_text(text, "config.yaml")
-        print(f" → {text}  →  {pred}")
+    for text in examples:
+        pred = predict_text(text)
+        print(f" → «{text}»  →  {pred}")
 
-    # 5. Evaluate model quality
+    # 3. Оценка
     print("\nОцениваем качество модели…")
     evaluate_model("config.yaml")
 
-    print("\nПолный цикл успешно завершён.")
+    print("\nПолный ML-процесс завершён успешно!")
 
 
 if __name__ == "__main__":

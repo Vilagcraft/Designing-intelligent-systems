@@ -8,8 +8,23 @@ from .utils import tokenize
 
 class ReviewsDataset(Dataset):
     def __init__(self, df, vocab, max_len, label2id):
+        # Удаляем NaN
+        df = df.dropna(subset=["rating"]).copy()
+
+        # Преобразуем текстовые метки → id
+        df["label_id"] = df["rating"].map(label2id)
+
+        # Проверяем, нет ли неизвестных лейблов
+        bad_rows = df[df["label_id"].isna()]
+        if len(bad_rows) > 0:
+            raise ValueError(
+                f"Обнаружены неизвестные значения rating:\n{bad_rows['rating'].unique()}"
+            )
+
+        df["label_id"] = df["label_id"].astype(int)
+
         self.texts = df["clean_text"].tolist()
-        self.labels = df["rating"].map(label2id).tolist()
+        self.labels = df["label_id"].tolist()
         self.vocab = vocab
         self.max_len = max_len
 
@@ -21,30 +36,43 @@ class ReviewsDataset(Dataset):
         label = self.labels[idx]
 
         tokens = tokenize(text)
-
         token_ids = [self.vocab.get(t, self.vocab["<unk>"]) for t in tokens]
 
-        # pad / truncate
         token_ids = token_ids[: self.max_len]
         token_ids += [self.vocab["<pad>"]] * (self.max_len - len(token_ids))
 
-        return torch.tensor(token_ids), torch.tensor(label)
+        return torch.tensor(token_ids, dtype=torch.long), torch.tensor(label, dtype=torch.long)
 
 
 def load_dataloaders(config):
     df = pd.read_parquet(config["paths"]["data"])
 
-    # Маппинг классов
+    # исправление опечаток
+    fix_map = {
+        "neautral": "neutral",
+        "posotive": "positive",
+        "postive": "positive",
+        "nagative": "negative",
+        "negativ": "negative"
+    }
+    df["rating"] = df["rating"].replace(fix_map)
+
+    # маппинг
     labels = config["labels"]
     label2id = {label: i for i, label in enumerate(labels)}
 
-    # Разделение 80/10/10
+    # проверяем, что всё корректно
+    invalid = set(df["rating"]) - set(labels)
+    if invalid:
+        raise ValueError(f"В датасете есть неизвестные значения rating: {invalid}")
+
+    # split
     train_df = df.sample(frac=0.8, random_state=42)
     temp = df.drop(train_df.index)
     valid_df = temp.sample(frac=0.5, random_state=42)
     test_df = temp.drop(valid_df.index)
 
-    # загружаем словарь
+    # словарь
     vocab_path = Path(config["paths"]["vocab_path"])
     vocab = json.load(open(vocab_path)) if vocab_path.exists() else {}
 
