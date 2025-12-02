@@ -1,0 +1,13 @@
+[book]
+title = "Лабораторные работы — Анализ тональности отзывов"
+author = ["Константин Токарев"]
+language = "ru"
+multilingual = false
+src = "docs"
+summary = "docs/SUMMARY.md"
+
+[output.html]
+default-theme = "light"
+
+[preprocessor.links]
+enable = true

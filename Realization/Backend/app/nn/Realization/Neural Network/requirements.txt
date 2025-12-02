@@ -1,0 +1,12 @@
+torch
+torchvision
+torchaudio
+pandas
+numpy
+pyyaml
+tqdm
+scikit-learn
+regex
+matplotlib
+pyarrow
+fastparquet

@@ -1,0 +1,6 @@
+{
+  "n_total": 90000,
+  "lang_dist": {"ru": 89990, "unknown": 10},
+  "avg_words": 47.8,
+  "rating_dist": {"positive": 30000, "neutral": 30000, "negative": 30000}
+}
