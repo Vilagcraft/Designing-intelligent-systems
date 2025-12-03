@@ -93,35 +93,51 @@
         <div v-if="statusData" class="status-content">
           <el-descriptions :column="1" border>
             <el-descriptions-item label="Состояние">
-              <el-tag :type="getStatusType(statusData.status)">
-                {{ getStatusText(statusData.status) }}
+              <el-tag :type="statusData.running ? 'warning' : (statusData.result?.includes('success') ? 'success' : 'danger')">
+                {{ statusData.running ? 'Выполняется' : (statusData.result?.includes('success') ? 'Завершено' : 'Ошибка') }}
               </el-tag>
             </el-descriptions-item>
             
-            <el-descriptions-item v-if="statusData.message" label="Сообщение">
-              {{ statusData.message }}
+            <el-descriptions-item label="Результат">
+              <div v-if="statusData.result" :class="{'error-text': statusData.result.includes('error')}">
+                {{ statusData.result }}
+              </div>
+              <div v-else class="info-text">
+                Нет данных
+              </div>
             </el-descriptions-item>
             
-            <el-descriptions-item v-if="statusData.train_count !== undefined" label="Количество обучений">
-              {{ statusData.train_count }}
+            <el-descriptions-item v-if="statusData.last_run" label="Последний запуск">
+              {{ statusData.last_run }}
             </el-descriptions-item>
             
-            <el-descriptions-item v-if="statusData.last_trained" label="Последнее обучение">
-              {{ formatDate(statusData.last_trained) }}
-            </el-descriptions-item>
-            
-            <el-descriptions-item v-if="statusData.progress !== undefined" label="Прогресс">
-              <el-progress
-                :percentage="statusData.progress"
-                :status="statusData.progress === 100 ? 'success' : undefined"
-              />
+            <el-descriptions-item v-if="statusData.pid" label="Process ID">
+              {{ statusData.pid }}
             </el-descriptions-item>
           </el-descriptions>
 
-          <!-- Детали обучения -->
-          <div v-if="statusData.details" style="margin-top: 20px">
-            <el-divider content-position="left">Детали</el-divider>
-            <pre class="details-pre">{{ JSON.stringify(statusData.details, null, 2) }}</pre>
+          <!-- Ошибка с инструкциями -->
+          <div v-if="statusData.result?.includes('error')" style="margin-top: 20px">
+            <el-alert
+              title="Инструкции по устранению ошибки"
+              type="warning"
+              :closable="false"
+            >
+              <template #default>
+                <p><strong>Возможные причины:</strong></p>
+                <ol>
+                  <li>Не найден файл обучения (train_entrypoint.py)</li>
+                  <li>Отсутствует датасет для обучения</li>
+                  <li>Не хватает зависимостей (PyTorch, pandas)</li>
+                </ol>
+                <p><strong>Решение:</strong></p>
+                <ul>
+                  <li>Проверьте наличие файла: <code>app/nn/Realization/Neural Network/train_entrypoint.py</code></li>
+                  <li>Убедитесь, что установлены все зависимости: <code>pip install -r requirements.txt</code></li>
+                  <li>Проверьте логи в директории <code>logs/</code></li>
+                </ul>
+              </template>
+            </el-alert>
           </div>
         </div>
       </el-card>
@@ -278,6 +294,19 @@ const formatDate = (dateString) => {
   overflow-x: auto;
   max-height: 300px;
   overflow-y: auto;
+}
+
+.error-text {
+  color: var(--el-color-danger);
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.info-text {
+  color: var(--el-text-color-secondary);
+  font-style: italic;
 }
 
 @media (max-width: 768px) {

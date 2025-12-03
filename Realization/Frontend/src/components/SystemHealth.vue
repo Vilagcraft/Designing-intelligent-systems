@@ -32,52 +32,55 @@
       <el-row :gutter="20">
         <el-col :xs="24" :sm="8">
           <el-card shadow="hover" class="status-item">
-            <el-statistic title="Общий статус">
-              <template #prefix>
-                <el-icon :color="getStatusColor(healthData.status === 'ok')">
+            <div class="status-content">
+              <div class="status-title">Общий статус</div>
+              <div class="status-value">
+                <el-icon :size="32" :color="getStatusColor(healthData.status === 'ok')">
                   <component :is="healthData.status === 'ok' ? 'CircleCheckFilled' : 'CircleCloseFilled'" />
                 </el-icon>
-              </template>
-              <template #suffix>
-                <el-tag :type="healthData.status === 'ok' ? 'success' : 'danger'">
+              </div>
+              <div class="status-tag">
+                <el-tag :type="healthData.status === 'ok' ? 'success' : 'danger'" size="large">
                   {{ healthData.status === 'ok' ? 'OK' : 'ОШИБКА' }}
                 </el-tag>
-              </template>
-            </el-statistic>
+              </div>
+            </div>
           </el-card>
         </el-col>
 
         <el-col :xs="24" :sm="8">
           <el-card shadow="hover" class="status-item">
-            <el-statistic title="Модель">
-              <template #prefix>
-                <el-icon :color="getStatusColor(healthData.model)">
+            <div class="status-content">
+              <div class="status-title">Модель</div>
+              <div class="status-value">
+                <el-icon :size="32" :color="getStatusColor(healthData.model)">
                   <component :is="healthData.model ? 'CircleCheckFilled' : 'CircleCloseFilled'" />
                 </el-icon>
-              </template>
-              <template #suffix>
-                <el-tag :type="healthData.model ? 'success' : 'danger'">
+              </div>
+              <div class="status-tag">
+                <el-tag :type="healthData.model ? 'success' : 'danger'" size="large">
                   {{ healthData.model ? 'Загружена' : 'Не найдена' }}
                 </el-tag>
-              </template>
-            </el-statistic>
+              </div>
+            </div>
           </el-card>
         </el-col>
 
         <el-col :xs="24" :sm="8">
           <el-card shadow="hover" class="status-item">
-            <el-statistic title="Словарь">
-              <template #prefix>
-                <el-icon :color="getStatusColor(healthData.vocab)">
+            <div class="status-content">
+              <div class="status-title">Словарь</div>
+              <div class="status-value">
+                <el-icon :size="32" :color="getStatusColor(healthData.vocab)">
                   <component :is="healthData.vocab ? 'CircleCheckFilled' : 'CircleCloseFilled'" />
                 </el-icon>
-              </template>
-              <template #suffix>
-                <el-tag :type="healthData.vocab ? 'success' : 'danger'">
+              </div>
+              <div class="status-tag">
+                <el-tag :type="healthData.vocab ? 'success' : 'danger'" size="large">
                   {{ healthData.vocab ? 'Загружен' : 'Не найден' }}
                 </el-tag>
-              </template>
-            </el-statistic>
+              </div>
+            </div>
           </el-card>
         </el-col>
       </el-row>
@@ -252,12 +255,29 @@ const handleDownload = async (type) => {
 
 .status-item {
   margin-bottom: 10px;
-  text-align: center;
 }
 
-.status-item :deep(.el-statistic__head) {
+.status-content {
+  text-align: center;
+  padding: 10px;
+}
+
+.status-title {
   font-size: 14px;
-  margin-bottom: 10px;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.status-value {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-tag {
+  margin-top: 15px;
 }
 
 .actions-section {

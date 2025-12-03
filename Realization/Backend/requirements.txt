@@ -1,13 +1,18 @@
+# FastAPI Backend
 fastapi
 uvicorn
 pydantic
 python-multipart
 
+# Neural Network
 torch
 numpy
 pyyaml
 regex
+tqdm
 
+# Data Processing
 pandas
 pyarrow
 fastparquet
+scikit-learn

@@ -80,6 +80,12 @@ if not exist "Realization\Backend\.venv" (
     echo [✓] Backend настроен успешно
 ) else (
     echo [✓] Виртуальное окружение найдено
+    echo [*] Проверка и обновление зависимостей...
+    cd Realization\Backend
+    call .venv\Scripts\activate.bat
+    pip install -r requirements.txt --quiet
+    cd ..\..
+    echo [✓] Зависимости проверены
 )
 echo.
 
