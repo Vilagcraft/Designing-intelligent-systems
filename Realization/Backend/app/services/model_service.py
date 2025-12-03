@@ -52,10 +52,17 @@ class ModelService:
         torch = self._import_torch()
 
         try:
-            mod = importlib.import_module("app.nn.src.model")
+            # Добавляем путь к Neural Network src в sys.path
+            import sys
+            nn_src_path = Path(__file__).resolve().parents[1] / "nn" / "Realization" / "Neural Network" / "src"
+            if str(nn_src_path) not in sys.path:
+                sys.path.insert(0, str(nn_src_path))
+            
+            # Импортируем напрямую из src
+            mod = importlib.import_module("model")
             BiLSTMAttention = getattr(mod, "BiLSTMAttention")
         except Exception as e:
-            raise RuntimeError("Не удалось импортировать класс BiLSTMAttention из app.nn.src.model: " + str(e))
+            raise RuntimeError("Не удалось импортировать класс BiLSTMAttention из model: " + str(e))
 
         self.model = BiLSTMAttention(
             vocab_size=len(self.vocab),

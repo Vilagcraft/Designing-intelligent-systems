@@ -1,3 +1,68 @@
-/Realization/Backend/app/nn/Realization/Neural Network/.idea/
-/Realization/Backend/app/nn/Realization/Neural Network/.idea/
-/Realization/Backend/app/nn/Realization/Neural Network/.venv/
+# Python
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.Python
+**/.venv/
+**/venv/
+**/env/
+**/ENV/
+**/.pytest_cache/
+**/*.egg-info/
+**/*.egg
+**/pip-log.txt
+**/pip-delete-this-directory.txt
+
+# Node.js / Frontend
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/.cache/
+**/*.local
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# IDE
+**/.idea/
+**/.vscode/
+**/*.swp
+**/*.swo
+**/*.swn
+**/.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Logs
+**/logs/
+**/*.log
+
+# Models and data
+**/models/*.pt
+**/models/model.pt
+**/data/processed/
+**/data/raw/
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Coverage reports
+**/htmlcov/
+**/.coverage
+**/.coverage.*
+**/coverage.xml
+**/*.cover
+
+# Jupyter Notebook
+**/.ipynb_checkpoints/
+
+# Environment
+**/.env
+**/.env.local
+**/.env.*.local

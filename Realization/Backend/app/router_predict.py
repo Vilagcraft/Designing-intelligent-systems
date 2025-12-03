@@ -17,7 +17,13 @@ async def predict_batch(req: BatchRequest):
     for text in req.texts:
         try:
             result = loaded_model.predict(text)
-            results.append({"text": text, "label": result["label"]})
+            # Возвращаем полные данные включая probs для визуализации
+            results.append({
+                "text": text, 
+                "label": result.get("label"),
+                "probs": result.get("probs", []),
+                "ok": result.get("ok", True)
+            })
         except Exception as e:
             results.append({"text": text, "error": str(e)})
     return {"results": results}
