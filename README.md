@@ -109,6 +109,14 @@ npm run dev
 - [Backend README](Realization/Backend/app/README.md) - документация бэкенда
 - [API Docs](http://localhost:8000/docs) - Swagger документация (требуется запущенный сервер)
 
+#### 🚀 Deployment
+
+- [DEPLOYMENT.md](DEPLOYMENT.md) - общее руководство по развертыванию
+- [DOCKER.md](DOCKER.md) - работа с Docker
+- [DEPLOY_RENDER.md](DEPLOY_RENDER.md) - деплой на Render.com
+- [RENDER_QUICK_START.md](RENDER_QUICK_START.md) - быстрый старт на Render (5 минут)
+- [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) - готовность к production
+
 ### 📄 4. Выходной материал
 🔄 **In Progress**  
 *Итоговые результаты будут добавлены по завершении проекта*

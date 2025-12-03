@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: ./Realization/Backend
+      dockerfile: Dockerfile
+    container_name: sentiment-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Монтируем модели как volume
+      - ./Realization/Backend/app/nn/Realization/Neural Network/models:/app/app/nn/Realization/Neural Network/models
+      - ./logs/backend:/app/logs
+    networks:
+      - sentiment-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./Realization/Frontend
+      dockerfile: Dockerfile
+    container_name: sentiment-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - sentiment-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  sentiment-network:
+    driver: bridge
+
+volumes:
+  models:
+    driver: local
+

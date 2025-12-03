@@ -1,0 +1,64 @@
+# Render Blueprint для автоматического деплоя
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Backend Service (FastAPI)
+  - type: web
+    name: sentiment-backend
+    runtime: docker
+    dockerfilePath: ./Realization/Backend/Dockerfile
+    dockerContext: ./Realization/Backend
+    plan: free  # или starter для production
+    region: frankfurt  # выберите ближайший регион
+    branch: main
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PORT
+        value: 8000
+    # Раскомментируйте для persistent storage
+    # disk:
+    #   name: sentiment-models
+    #   mountPath: /data/models
+    #   sizeGB: 1
+
+  # Frontend Static Site (Vue + Vite)
+  - type: web
+    name: sentiment-frontend
+    runtime: static
+    buildCommand: cd Realization/Frontend && npm install && npm run build
+    staticPublishPath: ./Realization/Frontend/dist
+    pullRequestPreviewsEnabled: true
+    branch: main
+    envVars:
+      - key: VITE_API_BASE_URL
+        # Обновите это значение на ваш backend URL после первого деплоя
+        value: https://sentiment-backend.onrender.com
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+# Раскомментируйте для database (если потребуется)
+# databases:
+#   - name: sentiment-db
+#     databaseName: sentiment
+#     user: sentiment_user
+#     plan: free
+

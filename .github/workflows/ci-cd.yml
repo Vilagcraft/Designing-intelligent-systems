@@ -1,0 +1,132 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Backend tests and linting
+  backend-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          cd Realization/Backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov flake8 black
+      
+      - name: Lint with flake8
+        run: |
+          cd Realization/Backend
+          flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      
+      - name: Format check with black
+        run: |
+          cd Realization/Backend
+          black --check app
+      
+      # Раскомментируйте когда добавите тесты
+      # - name: Run tests
+      #   run: |
+      #     cd Realization/Backend
+      #     pytest tests/ --cov=app --cov-report=xml
+      
+      # - name: Upload coverage
+      #   uses: codecov/codecov-action@v3
+
+  # Frontend tests and linting
+  frontend-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          cd Realization/Frontend
+          npm ci
+      
+      - name: Lint
+        run: |
+          cd Realization/Frontend
+          npm run lint || true  # Пока без strict mode
+      
+      - name: Build
+        run: |
+          cd Realization/Frontend
+          npm run build
+      
+      # Раскомментируйте когда добавите тесты
+      # - name: Run tests
+      #   run: |
+      #     cd Realization/Frontend
+      #     npm run test:unit
+
+  # Build and push Docker images
+  docker-build:
+    needs: [backend-quality, frontend-quality]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push Backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./Realization/Backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-backend:latest,${{ secrets.DOCKERHUB_USERNAME }}/sentiment-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./Realization/Frontend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-frontend:latest,${{ secrets.DOCKERHUB_USERNAME }}/sentiment-frontend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Deploy to production (пример)
+  deploy:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /opt/sentiment-analysis
+            docker-compose pull
+            docker-compose up -d
+            docker-compose exec -T backend python -c "print('Backend is running')"
+
