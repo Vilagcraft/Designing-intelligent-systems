@@ -11,3 +11,5 @@ regex
 pandas
 pyarrow
 fastparquet
+
+python-multipart

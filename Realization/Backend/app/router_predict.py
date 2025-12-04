@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from app.models.predict_request import PredictRequest, BatchRequest
-from app.services.model_service import loaded_model
+
+from Realization.Backend.app.models.predict_request import PredictRequest, BatchRequest
+from Realization.Backend.app.services.model_service import loaded_model
 
 router = APIRouter(prefix="/predict", tags=["Predict"])
 
