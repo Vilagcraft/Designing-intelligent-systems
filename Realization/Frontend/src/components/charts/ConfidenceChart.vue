@@ -3,13 +3,13 @@
     <v-chart 
       :option="chartOption" 
       :autoresize="true"
-      style="height: 400px;"
+      style="height: 450px;"
     />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -19,7 +19,9 @@ import {
   TooltipComponent,
   GridComponent,
   LegendComponent,
-  DataZoomComponent
+  DataZoomComponent,
+  MarkLineComponent,
+  MarkAreaComponent
 } from 'echarts/components'
 
 use([
@@ -29,7 +31,9 @@ use([
   TooltipComponent,
   GridComponent,
   LegendComponent,
-  DataZoomComponent
+  DataZoomComponent,
+  MarkLineComponent,
+  MarkAreaComponent
 ])
 
 const props = defineProps({
@@ -43,6 +47,9 @@ const props = defineProps({
     default: 'График уверенности модели'
   }
 })
+
+// Получаем информацию о текущей теме
+const isDark = inject('isDark', ref(false))
 
 const chartOption = computed(() => {
   const confidenceData = props.data.map((item, index) => {
@@ -60,13 +67,21 @@ const chartOption = computed(() => {
     }
   })
 
+  // Динамические цвета в зависимости от темы
+  const textColor = isDark.value ? '#e0e0e0' : '#303133'
+  const axisLabelColor = isDark.value ? '#d0d0d0' : '#606266'
+  const axisLineColor = isDark.value ? '#666' : '#dcdfe6'
+  const splitLineColor = isDark.value ? '#444' : '#e4e7ed'
+
   return {
     title: {
       text: props.title,
       left: 'center',
+      top: 10,
       textStyle: {
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: textColor
       }
     },
     tooltip: {
@@ -77,27 +92,60 @@ const chartOption = computed(() => {
       }
     },
     grid: {
-      left: '3%',
-      right: '4%',
+      left: '8%',
+      right: '8%',
+      top: '15%',
       bottom: '15%',
       containLabel: true
     },
     xAxis: {
       type: 'category',
       data: confidenceData.map(d => d.index),
-      name: 'Номер текста'
+      name: 'Номер текста',
+      nameTextStyle: {
+        color: axisLabelColor,
+        fontSize: 12
+      },
+      axisLabel: {
+        color: axisLabelColor
+      },
+      axisLine: {
+        lineStyle: {
+          color: axisLineColor
+        }
+      }
     },
     yAxis: {
       type: 'value',
       name: 'Уверенность (%)',
       min: 0,
-      max: 100
+      max: 100,
+      nameTextStyle: {
+        color: axisLabelColor,
+        fontSize: 12
+      },
+      axisLabel: {
+        color: axisLabelColor
+      },
+      axisLine: {
+        lineStyle: {
+          color: axisLineColor
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: splitLineColor
+        }
+      }
     },
     dataZoom: [
       {
         type: 'slider',
         start: 0,
-        end: 100
+        end: 100,
+        textStyle: {
+          color: axisLabelColor
+        }
       }
     ],
     visualMap: {

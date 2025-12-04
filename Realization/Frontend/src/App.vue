@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import { DataAnalysis, ChatDotRound, Files, Setting, Monitor } from '@element-plus/icons-vue'
 import PredictSingle from './components/PredictSingle.vue'
 import PredictBatch from './components/PredictBatch.vue'
@@ -114,6 +114,9 @@ import SystemHealth from './components/SystemHealth.vue'
 
 const activeTab = ref('predict')
 const isDark = ref(false)
+
+// Предоставляем информацию о теме дочерним компонентам
+provide('isDark', isDark)
 
 // Проверяем сохраненную тему при загрузке
 onMounted(() => {

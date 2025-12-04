@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -38,16 +38,25 @@ const props = defineProps({
   }
 })
 
+// Получаем информацию о текущей теме
+const isDark = inject('isDark', ref(false))
+
 const chartOption = computed(() => {
   const percentage = (props.value * 100).toFixed(1)
+  
+  // Динамические цвета в зависимости от темы
+  const textColor = isDark.value ? '#e0e0e0' : '#303133'
+  const axisLabelColor = isDark.value ? '#d0d0d0' : '#606266'
   
   return {
     title: {
       text: props.title,
       left: 'center',
+      top: 10,
       textStyle: {
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: textColor
       }
     },
     series: [
@@ -92,19 +101,18 @@ const chartOption = computed(() => {
           }
         },
         axisLabel: {
-          color: '#464646',
+          color: axisLabelColor,
           fontSize: 12,
           distance: -60,
           formatter: function (value) {
-            if (value === 50) return 'Средне'
-            if (value === 75) return 'Хорошо'
-            if (value === 100) return 'Отлично'
+       
             return ''
           }
         },
         title: {
           offsetCenter: [0, '-20%'],
-          fontSize: 14
+          fontSize: 14,
+          color: textColor
         },
         detail: {
           fontSize: 30,
@@ -113,7 +121,7 @@ const chartOption = computed(() => {
           formatter: function (value) {
             return value.toFixed(1) + '%'
           },
-          color: 'auto'
+          color: textColor
         },
         data: [
           {
