@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from app.services.train_service import start_training, get_train_status
+
+from Realization.Backend.app.services.train_service import start_training, get_train_status
 
 router = APIRouter(prefix="/train", tags=["Training"])
 

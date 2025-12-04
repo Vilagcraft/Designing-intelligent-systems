@@ -5,8 +5,8 @@ from typing import Optional
 
 import importlib
 
-from app.config import MODEL_PATH, VOCAB_PATH, CONFIG_PATH
-from app.services.utils_service import load_nn_config, tokenize
+from Realization.Backend.app.config import CONFIG_PATH, VOCAB_PATH, MODEL_PATH
+from Realization.Backend.app.services.utils_service import load_nn_config, tokenize
 
 
 class ModelService:

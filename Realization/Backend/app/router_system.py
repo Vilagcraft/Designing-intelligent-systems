@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from app.config import MODEL_PATH, VOCAB_PATH
+
 from fastapi.responses import FileResponse
+
+from Realization.Backend.app.config import MODEL_PATH, VOCAB_PATH
 
 router = APIRouter(tags=["System"])
 
