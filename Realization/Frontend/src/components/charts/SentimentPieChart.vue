@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, inject } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -40,6 +40,9 @@ const props = defineProps({
   }
 })
 
+// Получаем информацию о текущей теме
+const isDark = inject('isDark', ref(false))
+
 const chartOption = computed(() => {
   // Подсчитываем статистику
   const stats = {}
@@ -57,13 +60,18 @@ const chartOption = computed(() => {
     }
   }))
 
+  // Динамические цвета в зависимости от темы
+  const textColor = isDark.value ? '#e0e0e0' : '#303133'
+  const borderColor = isDark.value ? '#666' : '#fff'
+
   return {
     title: {
       text: props.title,
       left: 'center',
       textStyle: {
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: textColor
       }
     },
     tooltip: {
@@ -73,7 +81,10 @@ const chartOption = computed(() => {
     legend: {
       orient: 'vertical',
       left: 'left',
-      top: 'center'
+      top: 'center',
+      textStyle: {
+        color: textColor
+      }
     },
     series: [
       {
@@ -83,12 +94,13 @@ const chartOption = computed(() => {
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 10,
-          borderColor: '#fff',
+          borderColor: borderColor,
           borderWidth: 2
         },
         label: {
           show: true,
-          formatter: '{b}: {d}%'
+          formatter: '{b}: {d}%',
+          color: textColor
         },
         emphasis: {
           label: {

@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -42,6 +42,9 @@ const props = defineProps({
   }
 })
 
+// Получаем информацию о текущей теме
+const isDark = inject('isDark', ref(false))
+
 const chartOption = computed(() => {
   const stats = {}
   props.data.forEach(item => {
@@ -53,13 +56,20 @@ const chartOption = computed(() => {
   const values = Object.values(stats)
   const colors = Object.keys(stats).map(getLabelColor)
 
+  // Динамические цвета в зависимости от темы
+  const textColor = isDark.value ? '#e0e0e0' : '#303133'
+  const axisLabelColor = isDark.value ? '#d0d0d0' : '#606266'
+  const axisLineColor = isDark.value ? '#666' : '#dcdfe6'
+  const splitLineColor = isDark.value ? '#444' : '#e4e7ed'
+
   return {
     title: {
       text: props.title,
       left: 'center',
       textStyle: {
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: textColor
       }
     },
     tooltip: {
@@ -79,12 +89,34 @@ const chartOption = computed(() => {
       data: categories,
       axisLabel: {
         interval: 0,
-        rotate: 30
+        rotate: 30,
+        color: axisLabelColor
+      },
+      axisLine: {
+        lineStyle: {
+          color: axisLineColor
+        }
       }
     },
     yAxis: {
       type: 'value',
-      name: 'Количество'
+      name: 'Количество',
+      nameTextStyle: {
+        color: axisLabelColor
+      },
+      axisLabel: {
+        color: axisLabelColor
+      },
+      axisLine: {
+        lineStyle: {
+          color: axisLineColor
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: splitLineColor
+        }
+      }
     },
     series: [
       {
@@ -99,7 +131,8 @@ const chartOption = computed(() => {
         barWidth: '60%',
         label: {
           show: true,
-          position: 'top'
+          position: 'top',
+          color: textColor
         },
         emphasis: {
           focus: 'series'

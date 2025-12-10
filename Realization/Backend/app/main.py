@@ -9,10 +9,10 @@ if PROJECT_ROOT not in sys.path:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from Realization.Backend.app.router_predict import router as predict_router
-from Realization.Backend.app.router_train import router as train_router
-from Realization.Backend.app.router_system import router as system_router
-from Realization.Backend.app.router_dataset import router as dataset_router
+from app.router_predict import router as predict_router
+from app.router_train import router as train_router
+from app.router_system import router as system_router
+from app.router_dataset import router as dataset_router
 
 def ensure_venv_and_dependencies():
 

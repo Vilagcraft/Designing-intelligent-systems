@@ -56,6 +56,16 @@
             <PredictBatch />
           </el-tab-pane>
 
+          <el-tab-pane name="dataset">
+            <template #label>
+              <span class="tab-label">
+                <el-icon><FolderOpened /></el-icon>
+                <span>Анализ датасета</span>
+              </span>
+            </template>
+            <DatasetAnalysis />
+          </el-tab-pane>
+
           <el-tab-pane name="training">
             <template #label>
               <span class="tab-label">
@@ -106,9 +116,10 @@
 
 <script setup>
 import { ref, onMounted, provide } from 'vue'
-import { DataAnalysis, ChatDotRound, Files, Setting, Monitor } from '@element-plus/icons-vue'
+import { DataAnalysis, ChatDotRound, Files, Setting, Monitor, FolderOpened } from '@element-plus/icons-vue'
 import PredictSingle from './components/PredictSingle.vue'
 import PredictBatch from './components/PredictBatch.vue'
+import DatasetAnalysis from './components/DatasetAnalysis.vue'
 import Training from './components/Training.vue'
 import SystemHealth from './components/SystemHealth.vue'
 
@@ -151,18 +162,17 @@ const openApiDocs = () => {
 }
 
 html, body {
-  height: 100%;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 #app {
-  height: 100%;
+  min-height: 100vh;
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
 }
 
 .el-container {
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -206,20 +216,16 @@ html, body {
 /* Основной контент */
 .app-main {
   flex: 1;
-  overflow: auto;
   padding: 20px;
   background: var(--el-bg-color-page);
 }
 
 .main-tabs {
-  height: 100%;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .main-tabs :deep(.el-tabs__content) {
   padding: 20px;
-  height: calc(100% - 55px);
-  overflow: auto;
 }
 
 .tab-label {

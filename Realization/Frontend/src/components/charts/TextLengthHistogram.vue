@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -40,6 +40,9 @@ const props = defineProps({
   }
 })
 
+// Получаем информацию о текущей теме
+const isDark = inject('isDark', ref(false))
+
 const chartOption = computed(() => {
   // Подсчитываем длину каждого текста
   const lengths = props.data.map(item => item.text?.length || 0)
@@ -57,13 +60,20 @@ const chartOption = computed(() => {
   const categories = Object.keys(bins).sort((a, b) => a - b).map(b => `${b}-${parseInt(b) + binSize}`)
   const values = Object.keys(bins).sort((a, b) => a - b).map(k => bins[k])
 
+  // Динамические цвета в зависимости от темы
+  const textColor = isDark.value ? '#e0e0e0' : '#303133'
+  const axisLabelColor = isDark.value ? '#d0d0d0' : '#606266'
+  const axisLineColor = isDark.value ? '#666' : '#dcdfe6'
+  const splitLineColor = isDark.value ? '#444' : '#e4e7ed'
+
   return {
     title: {
       text: props.title,
       left: 'center',
       textStyle: {
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: textColor
       }
     },
     tooltip: {
@@ -80,14 +90,39 @@ const chartOption = computed(() => {
       type: 'category',
       data: categories,
       name: 'Длина текста (символы)',
+      nameTextStyle: {
+        color: axisLabelColor
+      },
       axisLabel: {
         interval: 0,
-        rotate: 45
+        rotate: 45,
+        color: axisLabelColor
+      },
+      axisLine: {
+        lineStyle: {
+          color: axisLineColor
+        }
       }
     },
     yAxis: {
       type: 'value',
-      name: 'Количество текстов'
+      name: 'Количество текстов',
+      nameTextStyle: {
+        color: axisLabelColor
+      },
+      axisLabel: {
+        color: axisLabelColor
+      },
+      axisLine: {
+        lineStyle: {
+          color: axisLineColor
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: splitLineColor
+        }
+      }
     },
     series: [
       {
@@ -99,7 +134,8 @@ const chartOption = computed(() => {
         },
         label: {
           show: true,
-          position: 'top'
+          position: 'top',
+          color: textColor
         }
       }
     ]

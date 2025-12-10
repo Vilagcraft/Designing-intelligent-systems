@@ -51,7 +51,7 @@
         <el-tab-pane label="📋 Таблица результатов" name="table">
       <div class="results-header">
         <h3>Результаты анализа:</h3>
-        <el-space>
+        <el-space wrap>
           <el-statistic title="Всего" :value="results.length" />
           <el-statistic 
             title="Успешно" 
@@ -67,21 +67,57 @@
         </el-space>
       </div>
 
+      <!-- Фильтры -->
+      <div v-if="hasLanguages || hasRatings" class="filters-section">
+        <el-space wrap>
+          <el-select
+            v-if="hasLanguages"
+            v-model="selectedLanguage"
+            placeholder="Фильтр по языку"
+            clearable
+            style="width: 200px;"
+          >
+            <el-option label="Все языки" value="" />
+            <el-option
+              v-for="lang in uniqueLanguages"
+              :key="lang"
+              :label="getLanguageText(lang)"
+              :value="lang"
+            />
+          </el-select>
+          <el-select
+            v-if="hasRatings"
+            v-model="selectedRating"
+            placeholder="Фильтр по рейтингу"
+            clearable
+            style="width: 200px;"
+          >
+            <el-option label="Все рейтинги" value="" />
+            <el-option
+              v-for="rating in [1, 2, 3, 4, 5]"
+              :key="rating"
+              :label="`${rating} ⭐`"
+              :value="rating"
+            />
+          </el-select>
+        </el-space>
+      </div>
+
       <el-table 
-        :data="results" 
+        :data="filteredResults" 
         style="width: 100%; margin-top: 20px"
         stripe
         border
       >
         <el-table-column type="index" label="#" width="60" />
         
-        <el-table-column label="Текст" min-width="300">
+        <el-table-column label="Текст" min-width="250">
           <template #default="scope">
             <el-text :line-clamp="2">{{ scope.row.text }}</el-text>
           </template>
         </el-table-column>
         
-        <el-table-column label="Тональность" width="150" align="center">
+        <el-table-column label="Тональность" width="140" align="center">
           <template #default="scope">
             <el-tag v-if="scope.row.label" :type="getTagType(scope.row.label)">
               {{ getLabelText(scope.row.label) }}
@@ -90,7 +126,38 @@
           </template>
         </el-table-column>
         
-        <el-table-column label="Статус" width="120" align="center">
+        <el-table-column 
+          v-if="hasLanguages" 
+          label="Язык" 
+          width="120" 
+          align="center"
+        >
+          <template #default="scope">
+            <el-tag v-if="scope.row.language" type="primary" size="small">
+              {{ getLanguageText(scope.row.language) }}
+            </el-tag>
+            <span v-else>—</span>
+          </template>
+        </el-table-column>
+        
+        <el-table-column 
+          v-if="hasRatings" 
+          label="Рейтинг" 
+          width="140" 
+          align="center"
+        >
+          <template #default="scope">
+            <el-rate 
+              v-if="scope.row.rating" 
+              :model-value="scope.row.rating" 
+              disabled 
+              size="small"
+            />
+            <span v-else>—</span>
+          </template>
+        </el-table-column>
+        
+        <el-table-column label="Статус" width="100" align="center">
           <template #default="scope">
             <el-icon v-if="scope.row.label" color="#67c23a" :size="20">
               <SuccessFilled />
@@ -127,6 +194,8 @@ const inputTexts = ref('')
 const results = ref([])
 const loading = ref(false)
 const activeTab = ref('analytics')
+const selectedLanguage = ref('')
+const selectedRating = ref('')
 
 const texts = computed(() => {
   return inputTexts.value
@@ -141,6 +210,36 @@ const successCount = computed(() => {
 
 const errorCount = computed(() => {
   return results.value.filter(r => r.error).length
+})
+
+const hasLanguages = computed(() => {
+  return results.value.some(r => r.language)
+})
+
+const hasRatings = computed(() => {
+  return results.value.some(r => r.rating)
+})
+
+const uniqueLanguages = computed(() => {
+  const languages = new Set()
+  results.value.forEach(r => {
+    if (r.language) languages.add(r.language)
+  })
+  return Array.from(languages).sort()
+})
+
+const filteredResults = computed(() => {
+  let filtered = results.value
+  
+  if (selectedLanguage.value) {
+    filtered = filtered.filter(r => r.language === selectedLanguage.value)
+  }
+  
+  if (selectedRating.value) {
+    filtered = filtered.filter(r => r.rating === selectedRating.value)
+  }
+  
+  return filtered
 })
 
 const handleBatchPredict = async () => {
@@ -176,6 +275,8 @@ const handleBatchPredict = async () => {
 const handleClear = () => {
   inputTexts.value = ''
   results.value = []
+  selectedLanguage.value = ''
+  selectedRating.value = ''
 }
 
 const getTagType = (label) => {
@@ -191,6 +292,27 @@ const getLabelText = (label) => {
   if (labelLower.includes('negative')) return 'Отрицательная'
   if (labelLower.includes('neutral')) return 'Нейтральная'
   return label
+}
+
+const getLanguageText = (language) => {
+  const languages = {
+    'ru': 'Русский',
+    'en': 'English',
+    'uk': 'Українська',
+    'be': 'Беларуская',
+    'es': 'Español',
+    'fr': 'Français',
+    'de': 'Deutsch',
+    'it': 'Italiano',
+    'pt': 'Português',
+    'pl': 'Polski',
+    'zh': '中文',
+    'ja': '日本語',
+    'ko': '한국어',
+    'ar': 'العربية',
+    'hi': 'हिन्दी'
+  }
+  return languages[language.toLowerCase()] || language.toUpperCase()
 }
 
 const exportResults = () => {
@@ -246,6 +368,13 @@ h3 {
 .export-section {
   margin-top: 20px;
   text-align: right;
+}
+
+.filters-section {
+  margin: 15px 0;
+  padding: 15px;
+  background: var(--el-fill-color-light);
+  border-radius: 8px;
 }
 </style>
 

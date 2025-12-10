@@ -59,6 +59,21 @@
                   {{ getLabelText(result.label) }}
                 </el-tag>
               </el-descriptions-item>
+              <el-descriptions-item v-if="result.language" label="Определенный язык">
+                <el-tag type="primary" size="large">
+                  <el-icon style="margin-right: 5px;"><Location /></el-icon>
+                  {{ getLanguageText(result.language) }}
+                </el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item v-if="result.rating" label="Рейтинг товара">
+                <el-rate 
+                  v-model="result.rating" 
+                  disabled 
+                  show-score 
+                  :max="5"
+                  text-color="#ff9900"
+                />
+              </el-descriptions-item>
               <el-descriptions-item v-if="result.confidence" label="Уверенность">
                 <el-progress
                   :percentage="Math.round(result.confidence * 100)"
@@ -84,6 +99,38 @@
             <el-empty v-else description="Данные об уверенности недоступны" />
           </el-col>
         </el-row>
+
+        <!-- Советы по улучшению (только для отрицательных/нейтральных отзывов) -->
+        <div v-if="result.suggestions && result.suggestions.length > 0" class="suggestions-section">
+          <el-divider content-position="left">
+            <el-icon><InfoFilled /></el-icon>
+            Рекомендации по улучшению
+          </el-divider>
+          <el-alert
+            title="Советы для повышения качества продукта/услуги"
+            type="warning"
+            :closable="false"
+            style="margin-bottom: 15px;"
+          >
+            <p>На основе анализа отзыва были выявлены следующие области для улучшения:</p>
+          </el-alert>
+          <el-space direction="vertical" style="width: 100%;" :size="10">
+            <el-card 
+              v-for="(suggestion, index) in result.suggestions" 
+              :key="index"
+              shadow="hover"
+              class="suggestion-card"
+            >
+              <template #header>
+                <div class="suggestion-header">
+                  <el-icon color="#e6a23c" :size="18"><Warning /></el-icon>
+                  <span>Совет {{ index + 1 }}</span>
+                </div>
+              </template>
+              <p>{{ suggestion }}</p>
+            </el-card>
+          </el-space>
+        </div>
       </div>
     </div>
   </el-card>
@@ -92,7 +139,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { ElNotification } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { Search, Location, Warning, InfoFilled } from '@element-plus/icons-vue'
 import api from '../api/client'
 import SentimentGaugeChart from './charts/SentimentGaugeChart.vue'
 
@@ -175,6 +222,27 @@ const getProgressColor = (confidence) => {
   if (confidence > 0.6) return '#e6a23c'
   return '#f56c6c'
 }
+
+const getLanguageText = (language) => {
+  const languages = {
+    'ru': 'Русский',
+    'en': 'English',
+    'uk': 'Українська',
+    'be': 'Беларуская',
+    'es': 'Español',
+    'fr': 'Français',
+    'de': 'Deutsch',
+    'it': 'Italiano',
+    'pt': 'Português',
+    'pl': 'Polski',
+    'zh': '中文',
+    'ja': '日本語',
+    'ko': '한국어',
+    'ar': 'العربية',
+    'hi': 'हिन्दी'
+  }
+  return languages[language.toLowerCase()] || language.toUpperCase()
+}
 </script>
 
 <style scoped>
@@ -214,6 +282,26 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.suggestions-section {
+  margin-top: 30px;
+}
+
+.suggestion-card {
+  background: var(--el-fill-color-lighter);
+}
+
+.suggestion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.suggestion-card p {
+  margin: 0;
+  line-height: 1.6;
 }
 </style>
 

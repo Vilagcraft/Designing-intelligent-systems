@@ -2,7 +2,7 @@ import subprocess
 import threading
 import time
 
-from Realization.Backend.app.config import TRAIN_ENTRY, LOGS_DIR
+from app.config import TRAIN_ENTRY, LOGS_DIR
 
 TRAIN_STATUS = {
     "running": False,

@@ -93,6 +93,24 @@ export const api = {
       responseType: 'blob'
     })
     return response.data
+  },
+
+  /**
+   * Анализ датасета отзывов
+   * @param {File} file - Файл с датасетом (CSV, JSON, Parquet)
+   * @returns {Promise} Результаты анализа датасета
+   */
+  async analyzeDataset(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    const response = await apiClient.post('/dataset/analyze', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      timeout: 120000 // 2 минуты для больших файлов
+    })
+    return response.data
   }
 }
 

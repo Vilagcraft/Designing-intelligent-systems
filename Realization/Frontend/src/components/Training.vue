@@ -47,7 +47,7 @@
               size="large"
               style="width: 100%"
             >
-              <el-icon class="el-icon--left"><VideoPlay /></el-icon>
+              <el-icon class="el-icon--left"><CaretRight /></el-icon>
               {{ training ? 'Обучение запущено...' : 'Запустить обучение' }}
             </el-button>
           </el-form-item>
@@ -148,7 +148,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ElNotification, ElMessageBox } from 'element-plus'
-import { Setting, VideoPlay, Refresh, DataAnalysis } from '@element-plus/icons-vue'
+import { Setting, CaretRight, Refresh, DataAnalysis } from '@element-plus/icons-vue'
 import api from '../api/client'
 
 const forceTraining = ref(false)

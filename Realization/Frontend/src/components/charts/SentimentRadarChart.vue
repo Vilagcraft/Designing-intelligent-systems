@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -39,6 +39,9 @@ const props = defineProps({
     default: 'Многомерный анализ тональности'
   }
 })
+
+// Получаем информацию о текущей теме
+const isDark = inject('isDark', ref(false))
 
 const chartOption = computed(() => {
   // Статистика
@@ -75,13 +78,19 @@ const chartOption = computed(() => {
   // Нормализуем для radar chart
   const maxLength = 500 // предполагаемая максимальная длина
   
+  // Динамические цвета в зависимости от темы
+  const textColor = isDark.value ? '#e0e0e0' : '#303133'
+  const axisLineColor = isDark.value ? '#666' : '#dcdfe6'
+  const splitLineColor = isDark.value ? '#444' : '#e4e7ed'
+  
   return {
     title: {
       text: props.title,
       left: 'center',
       textStyle: {
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: textColor
       }
     },
     tooltip: {
@@ -89,7 +98,10 @@ const chartOption = computed(() => {
     },
     legend: {
       data: ['Метрики'],
-      bottom: 0
+      bottom: 0,
+      textStyle: {
+        color: textColor
+      }
     },
     radar: {
       indicator: [
@@ -99,7 +111,25 @@ const chartOption = computed(() => {
         { name: 'Средняя уверенность (%)', max: 100 },
         { name: 'Средняя длина', max: maxLength }
       ],
-      radius: '65%'
+      radius: '65%',
+      axisName: {
+        color: textColor
+      },
+      axisLine: {
+        lineStyle: {
+          color: axisLineColor
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: splitLineColor
+        }
+      },
+      splitArea: {
+        areaStyle: {
+          color: isDark.value ? ['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.1)'] : ['rgba(114,172,209,0.2)', 'rgba(114,172,209,0.4)']
+        }
+      }
     },
     series: [
       {
