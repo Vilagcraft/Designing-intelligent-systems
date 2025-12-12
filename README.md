@@ -66,6 +66,6 @@
     *   После успешного запуска `bat-файла` (не закрывая его) откройте в браузере адрес: [http://localhost:5173/](http://localhost:5173/).
 
 ### 📄 4. Выходной материал
-- **Отчет в формате DOCX**: [Google Docs](https://docs.google.com/document/d/1uDgCng0xT0xRf4-6sZPTMfLAefUFFYCgAxzX-N9_tLg/edit?usp=sharing)
+- **Отчет в формате DOCX**: [Google Docs](https://docs.google.com/document/d/1UwwHnhrRsP2D4fNcyV0gCMLfGMTUagbX/edit?usp=sharing&rtpof=true&sd=true)
 
 ---
